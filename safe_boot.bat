@@ -15,7 +15,7 @@ if "%mode%"=="" (
   echo Safe Boot is not set. Enabling minimal Safe Boot...
   bcdedit /set {current} safeboot minimal
   call :countdown
-  shutdown /r /t 0
+  shutdown /r /fw /t 0
 ) else (
   echo Safe Boot is already set to: %mode%
   set /p input=Disable Safe Boot now? Y/N: 
@@ -26,9 +26,9 @@ if "%mode%"=="" (
     shutdown /r /t 0
   ) else (
     echo No changes made.
-    pause
   )
 )
+goto :eof
 
 :countdown
 for %%i in (5 4 3 2 1) do (
@@ -36,5 +36,3 @@ for %%i in (5 4 3 2 1) do (
     timeout /t 1 >nul
 )
 goto :eof
-
-endlocal
