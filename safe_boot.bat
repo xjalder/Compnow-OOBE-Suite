@@ -16,6 +16,7 @@ if "%mode%"=="" (
   bcdedit /set {current} safeboot minimal
   call :countdown
   shutdown /r /fw /t 0
+  shutdown /r /fw /t 0
 ) else (
   echo Safe Boot is already set to: %mode%
   set /p input=Disable Safe Boot now? Y/N: 
