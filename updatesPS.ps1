@@ -33,13 +33,23 @@ for ($i = 1; $i -le $maxAttempts; $i++) {
 }
 
 try {
-	$updates = Get-WindowsUpdate
-	# Checks if there are no updates available or if there are <3 updates left (likely those that need reboot)
-	if ($updates -eq $null -or $updates.Count -lt 3) {
-		& "$PSScriptRoot\finishedUpdates.bat"
-	} else {
-		Write-Host "Updates not done"
-	}
+    # Check network connectivity (ping Google DNS as a simple test)
+    $pingResult = Test-Connection -ComputerName "8.8.8.8" -Count 1 -Quiet
+
+    if (-not $pingResult) {
+        # If no network connection, manually throw an error
+        throw "No network connection detected. Please check your network settings."
+    }
+
+    # Get the updates, forcing any errors to be terminating
+    $updates = Get-WindowsUpdate -ErrorAction Stop
+
+    # Check if there are no updates available or if less than 3 updates are left (likely requiring a reboot)
+    if ($updates -eq $null -or $updates.Count -lt 3) {
+        & "$PSScriptRoot\finishedUpdates.bat"
+    } else {
+        Write-Host "Updates not done"
+    }
 } catch {
-	Write-Host "Could not connect to Windows Update (Check network connection)"
+    Write-Host "Error: $($_.Exception.Message)"
 }
