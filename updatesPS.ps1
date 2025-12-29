@@ -6,6 +6,7 @@ Import-Module "$PSScriptRoot\Modules\PSWindowsUpdate\PSWindowsUpdate.psd1"
 # Setting max number of repeated update attempts
 $maxAttempts = 5
 
+Reset-WUComponents
 
 for ($i = 1; $i -le $maxAttempts; $i++) {
 
@@ -26,24 +27,11 @@ for ($i = 1; $i -le $maxAttempts; $i++) {
                       continue
 		}
 	}
-
      	
-	break
-	
+	break	
 }
 
 try {
-    # Check network connectivity (ping Google DNS as a simple test)
-    $pingResult = Test-Connection -ComputerName "8.8.8.8" -Count 1 -Quiet
-
-    if (-not $pingResult) {
-        # If no network connection, manually throw an error
-        throw "No network connection detected. Please check your network settings."
-    }
-
-    # Get the updates, forcing any errors to be terminating
-    $updates = Get-WindowsUpdate -ErrorAction Stop
-
     # Check if there are no updates available or if less than 3 updates are left (likely requiring a reboot)
     if ($updates -eq $null -or $updates.Count -lt 3) {
         & "$PSScriptRoot\finishedUpdates.bat"
